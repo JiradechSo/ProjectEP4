@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  password  String
+  fristName String?      @map("frist_name")
+  lastName  String?     @map("last_name")
+  email     String
+  phone     String?     @unique
+  address   String?
+  Warehouse Warehouse[]
+}
+
+model Warehouse {
+  id                 Int       @id @default(autoincrement())
+  number_fo_products Int
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId             Int       @map("user_id")
+  Product            Product[]
+}
+
+model Record {
+  id      Int       @id @default(autoincrement())
+  date    DateTime
+  Product Product[]
+}
+
+model Product {
+  id           Int            @id @default(autoincrement())
+  name         String
+  count        String
+  type         String
+  Warehouse    Warehouse      @relation(fields: [WarehouseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  WarehouseId  Int            @map("warehouse_id")
+  Record       Record         @relation(fields: [RecordId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  RecordId     Int            @map("record_id")
+  ProductImage ProductImage[]
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  Product   Product @relation(fields: [ProductId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ProductId Int     @map("product_id")
+}
